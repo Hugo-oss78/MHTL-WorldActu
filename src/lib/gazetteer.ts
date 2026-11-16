@@ -11,7 +11,7 @@ export interface Country {
 
 // ISO3 | numérique | nom FR | région | alias (normalisés, sans accents)
 const RAW = `
-FRA|250|France|france|france,francais,francaise,francaises,paris,elysee,matignon,macron,french,assemblee nationale,senat francais
+FRA|250|France|france|france,francais,francaise,francaises,paris,elysee,matignon,macron,french,assemblee nationale,senat francais,rassemblement national,france insoumise,le pen,bardella,melenchon
 DEU|276|Allemagne|europe|allemagne,allemand,allemande,allemands,berlin,germany,german,germans,bundestag
 GBR|826|Royaume-Uni|europe|royaume uni,britannique,britanniques,londres,downing street,united kingdom,britain,british,london,uk
 ITA|380|Italie|europe|italie,italien,italienne,italiens,rome,italy,italian
@@ -272,4 +272,32 @@ export function detectEntities(raw: string): { countries: string[]; orgs: string
     }
   }
   return { countries: [...countries], orgs: [...orgs] };
+}
+
+// Dirigeants et personnalités : une mention de personne indique un acteur, pas forcément un lieu.
+const PERSON_ALIASES = new Set(
+  'macron,le pen,bardella,melenchon,trump,poutine,putin,zelensky,zelenskyy,netanyahou,netanyahu,erdogan,orban,khamenei,xi jinping,modi,maduro,lula,sissi,sisi,kim jong un,loukachenko,lukashenko'.split(','),
+);
+const DEMONYM = /(ais|aise|aises|ien|ienne|iens|iennes|ain|aine|ains|aines|ese|ish|ian|ians|ois|oise|oises|ique|iques|een|eens|eenne|ais|i|is|ese|an|ans|ane|anes|e|es)$/;
+const NAME_EXCEPTIONS = new Set('bahrain,britain,spain,iran,oman,japan,taiwan,sudan,jordan,afghanistan,pakistan,kazakhstan,ouzbekistan,kirghizistan,tadjikistan,turkmenistan,yemen,chine,china,inde,france,russie,ukraine,syrie,libye,tunisie,algerie,turquie,grece,suisse,belgique,norvege,suede,finlande,estonie,lettonie,lituanie,pologne,hongrie,roumanie,bulgarie,serbie,croatie,slovaquie,slovenie,albanie,georgie,armenie,moldavie,bielorussie,irlande,islande,italie,espagne,allemagne,autriche,tchequie,mongolie,malaisie,indonesie,birmanie,thailande,coree du sud,coree du nord,egypte,jordanie,somalie,ethiopie,erythree,ouganda,tanzanie,zambie,mauritanie,guinee,libye,arabie saoudite,australie,bolivie,colombie,argentine,cisjordanie,gaza,mali,haiti,cuba,chili,perou,nicaragua,panama,guatemala,venezuela,bresil,mexique,canada,kenya,rwanda,burundi,tchad,niger,nigeria,ghana,senegal,benin,togo,gabon,angola,mozambique,zimbabwe,madagascar,liban,qatar,koweit,bahrein,irak,iraq,israel,palestine,dubai,gulf,kiev,kyiv,moscou,moscow,paris,londres,berlin,rome,madrid,pekin,beijing,tokyo,seoul,washington,teheran,tehran,ankara,istanbul,damas,beyrouth,beirut,riyad,doha,kaboul,kabul,bamako,niamey,dakar,abidjan,kinshasa,goma,nairobi,alger,tunis,rabat,tripoli,khartoum,bangui,juba,cambodge,cambodia,laos,vietnam,nepal,sri lanka,bangladesh,philippines,singapour,singapore'.split(','));
+
+function aliasWeight(alias: string): number {
+  if (PERSON_ALIASES.has(alias)) return 0.5;
+  if (!alias.includes(' ') && DEMONYM.test(alias) && !NAME_EXCEPTIONS.has(alias) && !COUNTRIES.some((c) => normalize(c.name).trim() === alias)) return 0.5;
+  return 1;
+}
+
+/** Poids de chaque pays mentionné : 1 pour un nom de pays, de ville ou de région, 0,5 pour un adjectif ou une personnalité. */
+export function countryWeights(raw: string): Map<string, number> {
+  let text = normalize(raw);
+  const out = new Map<string, number>();
+  for (const m of MATCHERS) {
+    if (m.kind !== 'country' || CASE_SENSITIVE_ALIASES.has(m.alias)) continue;
+    const needle = ` ${m.alias} `;
+    if (text.includes(needle)) {
+      out.set(m.id, Math.max(out.get(m.id) ?? 0, aliasWeight(m.alias)));
+      text = text.split(needle).join(' '.repeat(needle.length));
+    }
+  }
+  return out;
 }

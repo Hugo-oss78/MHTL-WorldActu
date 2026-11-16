@@ -92,3 +92,14 @@ describe('fiabilité', () => {
     expect(c.places).toContain('IND');
   });
 });
+
+describe('région principale', () => {
+  const region = (title: string, summary = '') => buildCluster([item(LM, title, summary)], now)!.region;
+  it('un dirigeant étranger cité ne déplace pas un sujet de politique française', () => {
+    expect(region('Présidentielle : Marine Tondelier dénonce les soutiens de Donald Trump à Marine Le Pen', 'Les appuis de Trump et Elon Musk à la candidate du Rassemblement national font débat.')).toBe('france');
+  });
+  it('un adjectif ne l’emporte pas sur le nom du pays', () => {
+    expect(region('Au Cambodge, qui organise le sommet de la francophonie, le long déclin de la langue française')).toBe('asie');
+    expect(region('L’Iran vise une base militaire américaine à Bahreïn')).toBe('moyen-orient');
+  });
+});
