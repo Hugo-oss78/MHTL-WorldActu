@@ -134,7 +134,7 @@ function selectTop(clusters: NewsCluster[]): NewsCluster[] {
     if (n >= 3) continue;
     top.push(c);
     perRegion.set(c.region, n + 1);
-    if (top.length >= 8) break;
+    if (top.length >= 10) break;
   }
   return top;
 }

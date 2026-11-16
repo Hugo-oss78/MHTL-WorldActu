@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { loadLatest, useLatest } from '../lib/data';
 import { conceptOfDay, dailyQuiz, decryptageOfDay, historyOfDay, parisDate, relatedClusters } from '../lib/daily';
@@ -8,9 +8,10 @@ import { dueCards } from '../lib/srs';
 import { DOSSIER_BY_ID } from '../content/dossiers';
 import { PERIOD_LABELS } from '../content/types';
 import NewsCard from '../components/NewsCard';
+import BriefFlash from '../components/BriefFlash';
 import QuizRunner from '../components/QuizRunner';
 import SaveButton from '../components/SaveButton';
-import { Card, ExtLink, Notice, Pill, SectionTitle } from '../components/ui';
+import { Card, ExtLink, Notice, Pill, SectionTitle, Tabs } from '../components/ui';
 import { IconCheck, IconRefresh } from '../components/Icons';
 
 const NO_SECTIONS: string[] = [];
@@ -44,6 +45,8 @@ export default function Home() {
   const { status, latest, run, error } = useLatest();
   const done = useStore((s) => s.briefingDone[today]) ?? NO_SECTIONS;
   const quizDone = useStore((s) => s.quizDone[today]);
+  const view = useStore((s) => s.briefView);
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
   useStore((s) => s.srs); // rafraîchit le compteur de révisions
   const due = dueCards(today).length;
 
@@ -118,11 +121,33 @@ export default function Home() {
                 <Notice>Seulement {briefing.top.length} sujet(s) remplissent les critères (récence, pertinence, recoupement) lors de la dernière actualisation.</Notice>
               </div>
             )}
-            <div className="space-y-3">
-              {briefing.top.map((c, i) => (
-                <NewsCard key={c.id} cluster={c} rank={i + 1} />
-              ))}
-            </div>
+            <Tabs
+              value={view}
+              onChange={(v) => update((s) => ({ ...s, briefView: v }))}
+              options={[
+                { value: 'bref', label: 'En bref' },
+                { value: 'detail', label: 'Détaillé' },
+              ]}
+            />
+            {view === 'bref' ? (
+              <BriefFlash
+                date={briefing.date}
+                clusters={briefing.top}
+                onOpen={(i) => {
+                  setOpenIdx(i);
+                  update((s) => ({ ...s, briefView: 'detail' }));
+                  setTimeout(() => document.getElementById(`sujet-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                }}
+              />
+            ) : (
+              <div className="space-y-3">
+                {briefing.top.map((c, i) => (
+                  <div key={c.id} id={`sujet-${i}`} className="scroll-mt-20">
+                    <NewsCard cluster={c} rank={i + 1} defaultOpen={openIdx === i} />
+                  </div>
+                ))}
+              </div>
+            )}
             <p className="mt-3 text-xs text-muted">
               Sélection automatique selon le recoupement des sources, la récence, les thématiques suivies et la priorité géographique (France, Europe, Moyen-Orient, États-Unis, Asie, Afrique).{' '}
               <Link to="/methode" className="text-accent hover:underline">Méthode</Link>
