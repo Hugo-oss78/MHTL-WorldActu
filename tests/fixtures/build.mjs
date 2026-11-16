@@ -45,7 +45,7 @@ const F = {
     ['Présidentielle : la candidature surprise de Teddy Riner bouscule la campagne', 'Un électeur sur cinq dit pouvoir voter pour le judoka, selon un sondage.', '2026-11-15T06:00:00Z', 'https://www.lemonde.fr/politique/test-riner'],
     ['Budget 2027 : le Sénat adopte la première partie du projet de loi de finances', 'Les sénateurs ont voté la partie recettes du texte budgétaire du gouvernement.', '2026-11-15T10:00:00Z', 'https://www.lemonde.fr/politique/test-budget'],
   ]),
-  'france24-fr': rss([
+  'euronews-fr': rss([
     ['Gaza : un commandant du Hamas tué dans une frappe israélienne sur un camp', 'Le Hamas et l’armée israélienne ont confirmé la mort du commandant de la brigade de Rafah (avec AFP).', '2026-11-15T09:00:00Z', 'https://www.france24.com/fr/test-gaza-commandant'],
     ['Trump, Poutine et Xi Jinping se réuniront en Chine la semaine prochaine', 'La Maison Blanche annonce un sommet inédit consacré notamment à la réduction des armes nucléaires (AFP).', '2026-11-14T18:00:00Z', 'https://www.france24.com/fr/test-sommet-chine'],
   ]),

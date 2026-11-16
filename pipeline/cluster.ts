@@ -1,5 +1,5 @@
 import type { Actor, NewsCluster, Reliability, RegionId, SourceRef, ThemeId } from '../src/lib/types';
-import { COUNTRY_BY_ISO3, ORG_BY_ID, REGION_PRIORITY, detectEntities } from '../src/lib/gazetteer';
+import { COUNTRY_BY_ISO3, ORG_BY_ID, REGION_PRIORITY, countryWeights, detectEntities } from '../src/lib/gazetteer';
 import { casualtyFigures, detectEventKeys, detectStatement, detectThemes, isOffTopic, properNouns } from '../src/lib/classify';
 import { jaccard, normalize, tokens } from '../src/lib/text';
 import { WIRES } from './sources';
@@ -212,10 +212,13 @@ export function primaryRegion(countries: string[], items: Item[]): { region: Reg
   }
   // Le pays le plus cité (les mentions dans les titres comptent double) détermine la région principale ;
   // à égalité, la priorité géographique du briefing départage.
+  // Les noms de pays et de villes comptent plus que les adjectifs (« américaine ») ou les dirigeants cités.
   const counts = new Map<string, number>();
   for (const i of items) {
-    const inTitle = new Set(detectEntities(i.title).countries);
-    for (const c of i.countries) counts.set(c, (counts.get(c) ?? 0) + (inTitle.has(c) ? 2 : 1));
+    const title = countryWeights(i.title);
+    const body = countryWeights(i.summary);
+    for (const c of new Set([...title.keys(), ...body.keys()]))
+      counts.set(c, (counts.get(c) ?? 0) + 2 * (title.get(c) ?? 0) + (body.get(c) ?? 0));
   }
   const prio = (iso: string) => REGION_PRIORITY[COUNTRY_BY_ISO3[iso]?.region ?? 'monde'];
   const top = [...counts.entries()].sort((a, b) => b[1] - a[1] || prio(b[0]) - prio(a[0]))[0]?.[0];
