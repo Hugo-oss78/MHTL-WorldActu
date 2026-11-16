@@ -48,6 +48,7 @@ export interface AtlasState {
   quizDone: Record<string, { score: number; total: number; mode: 'daily' | 'weekly' }>;
   briefingDone: Record<string, string[]>; // date -> sections terminées
   ai: AiConfig;
+  briefView: 'bref' | 'detail';
 }
 
 const KEY = 'atlas:v1';
@@ -66,6 +67,7 @@ export const DEFAULT_STATE: AtlasState = {
   quizDone: {},
   briefingDone: {},
   ai: { enabled: false, endpoint: 'https://openrouter.ai/api/v1/chat/completions', model: '', apiKey: '' },
+  briefView: 'bref',
 };
 
 function load(): AtlasState {

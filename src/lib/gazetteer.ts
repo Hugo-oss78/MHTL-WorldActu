@@ -301,3 +301,14 @@ export function countryWeights(raw: string): Map<string, number> {
   }
   return out;
 }
+
+// Codes ISO 3166-1 alpha-2 (pour les drapeaux emoji).
+const ISO2_RAW = 'FRA:FR DEU:DE GBR:GB ITA:IT ESP:ES PRT:PT BEL:BE NLD:NL CHE:CH AUT:AT POL:PL CZE:CZ SVK:SK HUN:HU ROU:RO BGR:BG GRC:GR CYP:CY SWE:SE FIN:FI NOR:NO DNK:DK ISL:IS IRL:IE EST:EE LVA:LV LTU:LT UKR:UA RUS:RU BLR:BY MDA:MD SRB:RS HRV:HR BIH:BA XKX:XK ALB:AL MKD:MK SVN:SI GEO:GE ARM:AM AZE:AZ TUR:TR ISR:IL PSE:PS LBN:LB SYR:SY JOR:JO IRQ:IQ IRN:IR SAU:SA ARE:AE QAT:QA KWT:KW BHR:BH OMN:OM YEM:YE EGY:EG USA:US CAN:CA MEX:MX CUB:CU VEN:VE COL:CO BRA:BR ARG:AR CHL:CL PER:PE BOL:BO ECU:EC HTI:HT NIC:NI PAN:PA GTM:GT CHN:CN TWN:TW JPN:JP KOR:KR PRK:KP IND:IN PAK:PK AFG:AF BGD:BD LKA:LK NPL:NP MMR:MM THA:TH VNM:VN KHM:KH LAO:LA MYS:MY SGP:SG IDN:ID PHL:PH MNG:MN KAZ:KZ UZB:UZ KGZ:KG TJK:TJ TKM:TM AUS:AU NZL:NZ NCL:NC MAR:MA DZA:DZ TUN:TN LBY:LY SDN:SD SSD:SS ETH:ET ERI:ER SOM:SO DJI:DJ KEN:KE UGA:UG RWA:RW BDI:BI COD:CD COG:CG CAF:CF CMR:CM TCD:TD NER:NE NGA:NG MLI:ML BFA:BF SEN:SN CIV:CI GHA:GH GIN:GN MRT:MR BEN:BJ TGO:TG GAB:GA AGO:AO MOZ:MZ ZAF:ZA ZWE:ZW MDG:MG TZA:TZ';
+export const ISO2: Record<string, string> = Object.fromEntries(ISO2_RAW.split(' ').map((p) => p.split(':')));
+
+/** Drapeau emoji d'un pays (chaîne vide si inconnu). */
+export function flag(iso3: string): string {
+  const c = ISO2[iso3];
+  if (!c) return '';
+  return String.fromCodePoint(...[...c].map((ch) => 0x1f1e6 + ch.charCodeAt(0) - 65));
+}

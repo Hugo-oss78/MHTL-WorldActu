@@ -35,7 +35,7 @@ GitHub Actions (toutes les 3 h, gratuit)            GitHub Pages (hébergement s
 
 ## 2. Fonctionnalités
 
-- **Accueil — briefing quotidien** : l'essentiel (5 à 10 sujets), décryptage géopolitique du jour (choisi selon l'actualité), histoire du jour (anniversaire ou rotation des 9 périodes), concept à connaître (avec articles du jour liés), quiz de 5 questions, « Ce jour-là » (Wikipédia).
+- **Accueil — briefing quotidien** : l'essentiel (jusqu'à 10 sujets, vue « En bref » avec drapeaux et sources ou vue détaillée, bouton « Partager le briefing »), décryptage géopolitique du jour (choisi selon l'actualité), histoire du jour (anniversaire ou rotation des 9 périodes), concept à connaître (avec articles du jour liés), quiz de 5 questions, « Ce jour-là » (Wikipédia).
 - **Actualité** : fil par région (France, Europe, Moyen-Orient, Amériques, Asie, Afrique, Défense et sécurité, Économie mondiale), filtres par période (24 h / 48 h / 7 jours) et thématique, recherche, carte interactive.
 - **Chaque sujet** : titre, résumé, date et heure, lieux, acteurs, thématiques, « pourquoi c'est important », « conséquences possibles » (signalées comme analyse), **indicateur de fiabilité**, nature de chaque titre (fait, déclaration, accusation, hypothèse), toutes les sources avec liens, liens vérifiés.
 - **Géopolitique** : 19 dossiers en 8 parties (situation, histoire, acteurs, intérêts, alliances, rapports de force, scénarios, conséquences pour l'Europe et la France) + chronologie + actualité liée ; ~130 fiches pays (régime, dirigeants, population, économie, forces armées, alliances) **datées et sourcées** (Wikidata, Banque mondiale / SIPRI / IISS).
