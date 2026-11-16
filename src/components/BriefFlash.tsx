@@ -3,6 +3,7 @@ import type { NewsCluster } from '../lib/types';
 import { flag } from '../lib/gazetteer';
 import { formatDate } from '../lib/format';
 import { RELIABILITY } from './Reliability';
+import { BackdropMap } from './WorldMap';
 
 const dateFr = (iso: string | null) =>
   iso ? new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso)) : 'date inconnue';
@@ -49,14 +50,15 @@ export default function BriefFlash({ date, clusters, onOpen }: { date: string; c
   };
   return (
     <div className="rounded-2xl border border-line bg-card">
-      <ol className="divide-y divide-line">
+      <ol className="divide-y divide-line overflow-hidden rounded-t-2xl">
         {clusters.map((c, i) => {
           const { lead, showTitle, others, flags } = parts(c);
           const r = RELIABILITY[c.reliability.level];
           return (
-            <li key={c.id} className="flex gap-3 px-4 py-3 sm:px-5">
-              <span className="w-6 shrink-0 pt-0.5 text-right font-serif text-lg font-semibold tabular-nums text-muted">{i + 1}.</span>
-              <div className="min-w-0 flex-1">
+            <li key={c.id} className="relative flex gap-3 overflow-hidden px-4 py-3 sm:px-5">
+              <BackdropMap countries={c.places.slice(0, 4)} />
+              <span className="relative w-6 shrink-0 pt-0.5 text-right font-serif text-lg font-semibold tabular-nums text-muted">{i + 1}.</span>
+              <div className="relative min-w-0 flex-1">
                 <button onClick={() => onOpen(i)} className="text-left font-semibold leading-snug hover:text-accent">
                   {flags && <span className="mr-1.5" aria-hidden>{flags}</span>}
                   {c.title}

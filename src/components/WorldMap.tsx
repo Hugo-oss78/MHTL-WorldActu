@@ -89,3 +89,46 @@ export default function WorldMap({
     </div>
   );
 }
+
+const MW = 600;
+const MH = 300;
+
+/**
+ * Carte d'arrière-plan : cadrée sur les pays concernés (surlignés), estompée vers la gauche
+ * pour laisser le texte lisible. Purement décorative (aria-hidden).
+ */
+export function BackdropMap({ countries, className = '' }: { countries: string[]; className?: string }) {
+  const [geo, setGeo] = useState<Geo | null>(cache);
+  useEffect(() => {
+    if (!geo) void loadWorld().then(setGeo);
+  }, [geo]);
+  const key = countries.join(',');
+  const paths = useMemo(() => {
+    if (!geo) return [];
+    const land = geo.features.filter((f) => f.properties.name !== 'Antarctica');
+    const focus = land.filter((f) => countries.includes(COUNTRY_BY_NUM[String(f.id)]?.iso3 ?? ''));
+    const target = { type: 'FeatureCollection' as const, features: focus.length ? focus : land };
+    // Marge généreuse autour des pays concernés pour garder du contexte géographique.
+    const pad = focus.length ? 70 : 10;
+    const proj = geoEqualEarth().fitExtent([[MW * 0.35 + pad, pad], [MW - pad, MH - pad]], target);
+    const path = geoPath(proj);
+    return land.map((f) => {
+      const iso3 = COUNTRY_BY_NUM[String(f.id)]?.iso3 ?? null;
+      return { d: path(f) ?? '', id: String(f.id) + f.properties.name, hit: !!iso3 && countries.includes(iso3) };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geo, key]);
+  return (
+    <svg
+      viewBox={`0 0 ${MW} ${MH}`}
+      preserveAspectRatio="xMaxYMid slice"
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-0 h-full w-full ${className}`}
+      style={{ maskImage: 'linear-gradient(to right, transparent 15%, black 70%)', WebkitMaskImage: 'linear-gradient(to right, transparent 15%, black 70%)' }}
+    >
+      {paths.map((p) => (
+        <path key={p.id} d={p.d} fill={p.hit ? 'var(--accent)' : 'var(--line)'} fillOpacity={p.hit ? 0.45 : 0.55} stroke="var(--card)" strokeWidth={0.6} />
+      ))}
+    </svg>
+  );
+}

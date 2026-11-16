@@ -10,6 +10,7 @@ import { ExtLink, Pill } from './ui';
 import SaveButton from './SaveButton';
 import AskPanel from './AskPanel';
 import { IconChevron, IconSparkle } from './Icons';
+import { BackdropMap } from './WorldMap';
 
 export const THEME_NAMES: Record<string, string> = {
   politique: 'Politique',
@@ -49,9 +50,10 @@ export default function NewsCard({ cluster: c, rank, defaultOpen = false }: { cl
 
   return (
     <article className="rounded-2xl border border-line bg-card">
-      <button onClick={toggle} className="flex w-full items-start gap-3 p-4 text-left sm:p-5" aria-expanded={open}>
-        {rank !== undefined && <span className="mt-0.5 font-serif text-2xl font-semibold text-muted/60 tabular-nums">{rank}</span>}
-        <div className="min-w-0 flex-1">
+      <button onClick={toggle} className="relative flex w-full items-start gap-3 overflow-hidden rounded-t-2xl p-4 text-left sm:p-5" aria-expanded={open}>
+        {c.places.length > 0 && <BackdropMap countries={c.places.slice(0, 4)} />}
+        {rank !== undefined && <span className="relative mt-0.5 font-serif text-2xl font-semibold text-muted/60 tabular-nums">{rank}</span>}
+        <div className="relative min-w-0 flex-1">
           <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
             <span className="font-semibold uppercase tracking-wider text-accent">{REGION_LABELS[c.region]}</span>
             <span>·</span>
@@ -70,7 +72,7 @@ export default function NewsCard({ cluster: c, rank, defaultOpen = false }: { cl
             <ReliabilityBadge level={c.reliability.level} />
           </div>
         </div>
-        <IconChevron size={18} className={`mt-1 shrink-0 text-muted transition-transform ${open ? 'rotate-90' : ''}`} />
+        <IconChevron size={18} className={`relative mt-1 shrink-0 text-muted transition-transform ${open ? 'rotate-90' : ''}`} />
       </button>
 
       {open && (
